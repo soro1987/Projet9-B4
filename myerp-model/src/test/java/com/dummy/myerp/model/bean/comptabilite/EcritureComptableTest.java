@@ -41,4 +41,18 @@ public class EcritureComptableTest {
         Assert.assertFalse(vEcriture.toString(), vEcriture.isEquilibree());
     }
 
+    @Test
+    public void shouldReturn15WhenContainsDebitLineOf10And5(){
+        //Given that
+        EcritureComptable vEcriture;
+        vEcriture = new EcritureComptable();
+        vEcriture.getListLigneEcriture().add(this.createLigne(1, "5", null));
+        vEcriture.getListLigneEcriture().add(this.createLigne(1, "10", null));
+        //When
+        BigDecimal totalDebit = vEcriture.getTotalDebit();
+        //Then
+        Assert.assertEquals(totalDebit.intValue(),15);
+
+    }
+
 }
