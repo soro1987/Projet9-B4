@@ -83,7 +83,7 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
          return getDaoProxy().getComptabiliteDao().getLastSequence(codeJournal,annee);
     }
 
-    private String buildReference(String codeJournal, Integer annee, int i) {
+    public String buildReference(String codeJournal, Integer annee, int i) {
         return new StringBuilder()
                 .append(codeJournal)
                 .append("-")

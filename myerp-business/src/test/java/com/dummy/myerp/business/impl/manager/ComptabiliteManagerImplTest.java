@@ -3,12 +3,15 @@ package com.dummy.myerp.business.impl.manager;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import com.dummy.myerp.model.bean.comptabilite.CompteComptable;
 import com.dummy.myerp.model.bean.comptabilite.EcritureComptable;
 import com.dummy.myerp.model.bean.comptabilite.JournalComptable;
 import com.dummy.myerp.model.bean.comptabilite.LigneEcritureComptable;
 import com.dummy.myerp.technical.exception.FunctionalException;
+
+import static org.junit.Assert.assertEquals;
 
 
 public class ComptabiliteManagerImplTest {
@@ -69,6 +72,32 @@ public class ComptabiliteManagerImplTest {
                                                                                  null, new BigDecimal(123),
                                                                                  null));
         manager.checkEcritureComptableUnit(vEcritureComptable);
+    }
+
+    @Test
+    public void shouldReturnAC201600001GivenAC_2016_1()  {
+        //Given that
+        String codeJournal = "AC";
+        int annee = 2016;
+        int i = 1;
+        //When
+        String stringBuilder = manager.buildReference(codeJournal,annee,i);
+        //Then
+        assertEquals("AC-2016/00001",stringBuilder );
+    }
+
+    @Test
+    public void stringBuilderTrowExeption()  {
+        int i = 1;
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("AC");
+        stringBuilder.append("-");
+        stringBuilder.append("2016");
+        stringBuilder.append("/");
+        stringBuilder.append(StringUtils.leftPad(i+"",5,"0"));
+
+
+        assertEquals("AC-2016/00001", stringBuilder.toString());
     }
 
 }
