@@ -12,6 +12,7 @@ public class SequenceEcritureComptable {
     /** La dernière valeur utilisée */
     private Integer derniereValeur;
 
+    private String codeJournal;
     // ==================== Constructeurs ====================
     /**
      * Constructeur
@@ -30,6 +31,11 @@ public class SequenceEcritureComptable {
         derniereValeur = pDerniereValeur;
     }
 
+    public SequenceEcritureComptable(Integer annee, Integer derniereValeur, String codeJournal) {
+        this.annee = annee;
+        this.derniereValeur = derniereValeur;
+        this.codeJournal = codeJournal;
+    }
 
     // ==================== Getters/Setters ====================
     public Integer getAnnee() {
@@ -44,17 +50,21 @@ public class SequenceEcritureComptable {
     public void setDerniereValeur(Integer pDerniereValeur) {
         derniereValeur = pDerniereValeur;
     }
-
+    public String getCodeJournal() {
+        return codeJournal;
+    }
+    public void setCodeJournal(String codeJournal) {
+        this.codeJournal = codeJournal;
+    }
 
     // ==================== Méthodes ====================
+
     @Override
     public String toString() {
-        final StringBuilder vStB = new StringBuilder(this.getClass().getSimpleName());
-        final String vSEP = ", ";
-        vStB.append("{")
-            .append("annee=").append(annee)
-            .append(vSEP).append("derniereValeur=").append(derniereValeur)
-            .append("}");
-        return vStB.toString();
+        return "SequenceEcritureComptable{" +
+                "annee=" + annee +
+                ", derniereValeur=" + derniereValeur +
+                ", codeJournal='" + codeJournal + '\'' +
+                '}';
     }
 }

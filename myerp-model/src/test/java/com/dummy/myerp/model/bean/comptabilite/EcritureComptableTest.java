@@ -55,4 +55,19 @@ public class EcritureComptableTest {
 
     }
 
+    @Test
+    public void shouldReturn15WhenContainsCredittLineOf10And5(){
+        //Given that
+        EcritureComptable vEcriture;
+        vEcriture = new EcritureComptable();
+        vEcriture.getListLigneEcriture().add(this.createLigne(1, null, "5"));
+        vEcriture.getListLigneEcriture().add(this.createLigne(1, null, "10"));
+        //When
+        BigDecimal totalCredit = vEcriture.getTotalCredit();
+        //Then
+        Assert.assertEquals(totalCredit.intValue(),15);
+
+    }
+
+
 }
