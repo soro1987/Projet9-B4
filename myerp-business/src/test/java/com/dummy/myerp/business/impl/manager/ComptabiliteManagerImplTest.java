@@ -3,20 +3,23 @@ package com.dummy.myerp.business.impl.manager;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.dummy.myerp.consumer.dao.contrat.ComptabiliteDao;
+import com.dummy.myerp.consumer.dao.contrat.DaoProxy;
+import com.dummy.myerp.model.bean.comptabilite.*;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import com.dummy.myerp.model.bean.comptabilite.CompteComptable;
-import com.dummy.myerp.model.bean.comptabilite.EcritureComptable;
-import com.dummy.myerp.model.bean.comptabilite.JournalComptable;
-import com.dummy.myerp.model.bean.comptabilite.LigneEcritureComptable;
 import com.dummy.myerp.technical.exception.FunctionalException;
+import org.mockito.Mockito;
+
 
 import static org.junit.Assert.assertEquals;
 
-
 public class ComptabiliteManagerImplTest {
 
+
+
     private ComptabiliteManagerImpl manager = new ComptabiliteManagerImpl();
+
 
 
     @Test
@@ -75,15 +78,41 @@ public class ComptabiliteManagerImplTest {
     }
 
     @Test
-    public void shouldReturnAC201600001GivenAC_2016_1()  {
+    public void shouldAddReference(){
+        //Given
+        EcritureComptable vEcritureComptable = new EcritureComptable();
+        vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
+        vEcritureComptable.setDate(new Date());
+        ComptabiliteManagerImpl comptabiliteManager = new ComptabiliteManagerImpl();
+        DaoProxy daoProxy = Mockito.mock(DaoProxy.class);
+        ComptabiliteDao comptabiliteDao = Mockito.mock(ComptabiliteDao.class);
+        Mockito.doReturn(comptabiliteDao).when(daoProxy).getComptabiliteDao();
+        SequenceEcritureComptable sequenceEcritureComptable
+                = new SequenceEcritureComptable(2016,1, "AC");
+        Mockito.doReturn(sequenceEcritureComptable).when(comptabiliteDao)
+                .getLastSequence(Mockito.anyString(),Mockito.anyInt());
+        Mockito.doNothing().when(comptabiliteDao)
+                .updateSequence(Mockito.isA(SequenceEcritureComptable.class));
+        comptabiliteManager.setDaoProxy(daoProxy);
+        //When
+        comptabiliteManager.addReference(vEcritureComptable);
+        //Then
+        assertEquals("AC-2020/00002",vEcritureComptable.getReference() );
+
+
+
+    }
+
+    @Test
+    public void shouldBuildReference()  {
         //Given that
         String codeJournal = "AC";
         int annee = 2016;
         int i = 1;
         //When
-        String stringBuilder = manager.buildReference(codeJournal,annee,i);
+        String reference = manager.buildReference(codeJournal,annee,i);
         //Then
-        assertEquals("AC-2016/00001",stringBuilder );
+        assertEquals("AC-2016/00001",reference );
     }
 
     @Test
@@ -101,3 +130,4 @@ public class ComptabiliteManagerImplTest {
     }
 
 }
+

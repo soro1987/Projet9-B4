@@ -6,6 +6,8 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 
 public class EcritureComptableTest {
 
@@ -68,6 +70,8 @@ public class EcritureComptableTest {
         Assert.assertEquals(totalCredit.intValue(),15);
 
     }
+
+
 
 
 }

@@ -61,6 +61,9 @@ public abstract class AbstractBusinessManager {
         return daoProxy;
     }
 
+    public  void setDaoProxy(DaoProxy daoProxy) {
+        AbstractBusinessManager.daoProxy = daoProxy;
+    }
 
     /**
      * Renvoie le gestionnaire de Transaction

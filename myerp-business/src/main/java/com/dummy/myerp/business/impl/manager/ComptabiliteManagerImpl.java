@@ -1,6 +1,7 @@
 package com.dummy.myerp.business.impl.manager;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -65,7 +66,7 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
     public synchronized void addReference(EcritureComptable pEcritureComptable) {
         String reference;
         String codeJournal = pEcritureComptable.getJournal().getCode();
-        Integer annee = pEcritureComptable.getDate().toInstant().get(ChronoField.YEAR);
+        Integer annee = Integer.valueOf(new SimpleDateFormat("yyyy").format(pEcritureComptable.getDate()));
         SequenceEcritureComptable sequenceEcritureComptable = getLastSequence(codeJournal,annee);
         if (sequenceEcritureComptable == null){
            reference = buildReference(codeJournal,annee,1);
@@ -83,7 +84,7 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
          return getDaoProxy().getComptabiliteDao().getLastSequence(codeJournal,annee);
     }
 
-    public String buildReference(String codeJournal, Integer annee, int i) {
+     String buildReference(String codeJournal, Integer annee, int i) {
         return new StringBuilder()
                 .append(codeJournal)
                 .append("-")
