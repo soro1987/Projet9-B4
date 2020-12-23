@@ -2,18 +2,14 @@ package com.dummy.myerp.business.impl.manager;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
-import com.dummy.myerp.consumer.dao.impl.db.dao.ComptabiliteDaoImpl;
 import com.dummy.myerp.model.bean.comptabilite.*;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
 import com.dummy.myerp.business.contrat.manager.ComptabiliteManager;
 import com.dummy.myerp.business.impl.AbstractBusinessManager;
@@ -66,7 +62,7 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
     public synchronized void addReference(EcritureComptable pEcritureComptable) {
         String reference;
         String codeJournal = pEcritureComptable.getJournal().getCode();
-        Integer annee = Integer.valueOf(new SimpleDateFormat("yyyy").format(pEcritureComptable.getDate()));
+        Integer annee = Integer.valueOf(new SimpleDateFormat("yyyy").format(pEcritureComptable.getDate_Ecriture_Comptable()));
         SequenceEcritureComptable sequenceEcritureComptable = getLastSequence(codeJournal,annee);
         if (sequenceEcritureComptable == null){
            reference = buildReference(codeJournal,annee,1);

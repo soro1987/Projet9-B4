@@ -27,7 +27,7 @@ public class EcritureComptable {
     @Pattern(regexp = "\\w{2}-\\d{4}/\\d{5}")
     private String reference;
     /** The Date. */
-    @NotNull private Date date;
+    @NotNull private Date date_Ecriture_Comptable;
 
     /** The Libelle. */
     @NotNull
@@ -59,11 +59,11 @@ public class EcritureComptable {
     public void setReference(String pReference) {
         reference = pReference;
     }
-    public Date getDate() {
-        return date;
+    public Date getDate_Ecriture_Comptable() {
+        return date_Ecriture_Comptable;
     }
-    public void setDate(Date pDate) {
-        date = pDate;
+    public void setDate_Ecriture_Comptable(Date pDate) {
+        date_Ecriture_Comptable = pDate;
     }
     public String getLibelle() {
         return libelle;
@@ -125,7 +125,7 @@ public class EcritureComptable {
             .append("id=").append(id)
             .append(vSEP).append("journal=").append(journal)
             .append(vSEP).append("reference='").append(reference).append('\'')
-            .append(vSEP).append("date=").append(date)
+            .append(vSEP).append("date=").append(date_Ecriture_Comptable)
             .append(vSEP).append("libelle='").append(libelle).append('\'')
             .append(vSEP).append("totalDebit=").append(this.getTotalDebit().toPlainString())
             .append(vSEP).append("totalCredit=").append(this.getTotalCredit().toPlainString())
