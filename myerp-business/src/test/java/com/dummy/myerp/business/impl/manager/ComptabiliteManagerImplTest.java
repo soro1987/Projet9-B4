@@ -31,7 +31,7 @@ public class ComptabiliteManagerImplTest {
         EcritureComptable vEcritureComptable;
         vEcritureComptable = new EcritureComptable();
         vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
-        vEcritureComptable.setDate_Ecriture_Comptable(new Date());
+        vEcritureComptable.setDate(new Date());
         vEcritureComptable.setLibelle("Libelle");
         vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
                                                                                  null, new BigDecimal(123),
@@ -54,7 +54,7 @@ public class ComptabiliteManagerImplTest {
         EcritureComptable vEcritureComptable;
         vEcritureComptable = new EcritureComptable();
         vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
-        vEcritureComptable.setDate_Ecriture_Comptable(new Date());
+        vEcritureComptable.setDate(new Date());
         vEcritureComptable.setLibelle("Libelle");
         vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
                                                                                  null, new BigDecimal(123),
@@ -70,7 +70,7 @@ public class ComptabiliteManagerImplTest {
         EcritureComptable vEcritureComptable;
         vEcritureComptable = new EcritureComptable();
         vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
-        vEcritureComptable.setDate_Ecriture_Comptable(new Date());
+        vEcritureComptable.setDate(new Date());
         vEcritureComptable.setLibelle("Libelle");
         vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
                                                                                  null, new BigDecimal(123),
@@ -86,19 +86,27 @@ public class ComptabiliteManagerImplTest {
         //Given
         EcritureComptable vEcritureComptable = new EcritureComptable();
         vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
-        vEcritureComptable.setDate_Ecriture_Comptable(new Date());
+        vEcritureComptable.setDate(new Date());
         ComptabiliteManagerImpl comptabiliteManager = new ComptabiliteManagerImpl();
+
         DaoProxy daoProxy = Mockito.mock(DaoProxy.class);
+
         ComptabiliteDao comptabiliteDao = Mockito.mock(ComptabiliteDao.class);
+
         Mockito.doReturn(comptabiliteDao).when(daoProxy).getComptabiliteDao();
+
         SequenceEcritureComptable sequenceEcritureComptable
                 = new SequenceEcritureComptable(2016,1, "AC");
+
         Mockito.doReturn(sequenceEcritureComptable).when(comptabiliteDao)
                 .getLastSequence(Mockito.anyString(),Mockito.anyInt());
+
         Mockito.doNothing().when(comptabiliteDao)
                 .updateSequence(Mockito.isA(SequenceEcritureComptable.class));
+
         comptabiliteManager.setDaoProxy(daoProxy);
         //When
+
         comptabiliteManager.addReference(vEcritureComptable);
         //Then
         assertEquals("AC-2020/00002",vEcritureComptable.getReference() );

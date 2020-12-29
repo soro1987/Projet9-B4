@@ -62,7 +62,7 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
     public synchronized void addReference(EcritureComptable pEcritureComptable) {
         String reference;
         String codeJournal = pEcritureComptable.getJournal().getCode();
-        Integer annee = Integer.valueOf(new SimpleDateFormat("yyyy").format(pEcritureComptable.getDate_Ecriture_Comptable()));
+        Integer annee = Integer.valueOf(new SimpleDateFormat("yyyy").format(pEcritureComptable.getDate()));
         SequenceEcritureComptable sequenceEcritureComptable = getLastSequence(codeJournal,annee);
         if (sequenceEcritureComptable == null){
            reference = buildReference(codeJournal,annee,1);

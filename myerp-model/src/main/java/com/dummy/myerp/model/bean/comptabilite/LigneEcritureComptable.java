@@ -1,6 +1,7 @@
 package com.dummy.myerp.model.bean.comptabilite;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -45,6 +46,8 @@ public class LigneEcritureComptable {
      * @param pDebit the debit
      * @param pCredit the credit
      */
+
+
     public LigneEcritureComptable(CompteComptable pCompteComptable, String pLibelle,
                                   BigDecimal pDebit, BigDecimal pCredit) {
         compteComptable = pCompteComptable;
@@ -93,5 +96,21 @@ public class LigneEcritureComptable {
             .append(vSEP).append("credit=").append(credit)
             .append("}");
         return vStB.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LigneEcritureComptable that = (LigneEcritureComptable) o;
+        return Objects.equals(compteComptable, that.compteComptable) &&
+                Objects.equals(libelle, that.libelle) &&
+                Objects.equals(debit, that.debit) &&
+                Objects.equals(credit, that.credit);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(compteComptable, libelle, debit, credit);
     }
 }
