@@ -17,11 +17,8 @@ import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
@@ -50,6 +47,7 @@ public class ComptabiliteDaoImplTest {
         assertEquals("foo",listCompteComptable.get(0).getLibelle());
 
     }
+
     @Test
     public void shouldReturnListJournalComptable(){
         JdbcTemplate vJdbcTemplate = new JdbcTemplate(dataSource);
@@ -61,6 +59,7 @@ public class ComptabiliteDaoImplTest {
         assertEquals("foo",journalComptables.get(0).getLibelle());
 
     }
+
     @Test
     public void shouldReturnListEcritureComptable(){
         //Declare datasource h2
@@ -143,8 +142,6 @@ public class ComptabiliteDaoImplTest {
 
     }
 
-
-
     @Test
     public void shouldloadListLigneEcriture() throws NotFoundException {
         EcritureComptable  ecritureComptable = new EcritureComptable(1);
@@ -188,8 +185,7 @@ public class ComptabiliteDaoImplTest {
 
     }
 
-    @Test
-    public void shouldUpdateEcritureComptable() throws NotFoundException {
+    @Test    public void shouldUpdateEcritureComptable() throws NotFoundException {
         //Cree EcritureComptable
         EcritureComptable  ecritureComptable = new EcritureComptable(1);
         JournalComptable journalComptable = new JournalComptable("60","test");
@@ -219,6 +215,37 @@ public class ComptabiliteDaoImplTest {
         assertEquals("Cartouches GENERIQUE",ecritureComptableRetour.getListLigneEcriture().get(1).getLibelle());
 
 
+
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void shouldReturnNotFoundExceptionWhenEcritureComptableIsDeleted() throws NotFoundException {
+        //When
+        JdbcTemplate vJdbcTemplate = new JdbcTemplate(dataSource);
+        String sql = "insert into myerp.ecriture_comptable(id,journal_code,reference,date,libelle)  values (1,'AC','AC-2016/00001','2016-12-31','Cartouches d’imprimante')";
+        vJdbcTemplate.execute(sql);
+        EcritureComptable  ecritureComptable = comptabiliteDao.getEcritureComptableByRef("AC-2016/00001");
+        //do
+        comptabiliteDaoImp.deleteEcritureComptable(ecritureComptable.getId());
+        //Shoult return not found exeption
+        EcritureComptable  deletedEcritureComptable = comptabiliteDao.getEcritureComptableByRef("AC-2016/00001");
+    }
+
+    @Test
+    public void shouldDeleteListLigneEcritureComptable() throws NotFoundException {
+        //When
+        EcritureComptable  ecritureComptable = new EcritureComptable(1);
+        EcritureComptable  ecritureComptableWithoutListLigne = new EcritureComptable(1);
+        List<String> listSize0Expected = Arrays.asList();
+        JdbcTemplate vJdbcTemplate = new JdbcTemplate(dataSource);
+        String sql = "insert into myerp.ligne_ecriture_comptable(ecriture_id ,ligne_id,compte_comptable_numero,libelle,debit,credit)  values (1,1,606,'Cartouches HP',null,null)";
+        vJdbcTemplate.execute(sql);
+        //do
+        comptabiliteDaoImp.loadListLigneEcriture(ecritureComptable);
+        comptabiliteDaoImp.deleteListLigneEcritureComptable(ecritureComptable.getId());
+        comptabiliteDaoImp.loadListLigneEcriture(ecritureComptableWithoutListLigne);
+        //then
+        assertEquals(listSize0Expected,ecritureComptableWithoutListLigne.getListLigneEcriture());
 
     }
 

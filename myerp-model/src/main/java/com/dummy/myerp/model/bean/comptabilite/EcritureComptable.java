@@ -45,6 +45,14 @@ public class EcritureComptable {
         this.id = id;
     }
 
+    public EcritureComptable(Integer id, JournalComptable journal, String reference, Date date, String libelle) {
+        this.id = id;
+        this.journal = journal;
+        this.reference = reference;
+        this.date = date;
+        this.libelle = libelle;
+    }
+
     public EcritureComptable() {
     }
 
