@@ -322,6 +322,7 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
         try {
             return vJdbcTemplate.queryForObject(sql, vSqlParams, vRM);
         } catch (DataAccessException e) {
+
             return null;
         }
     }

@@ -1,22 +1,20 @@
 package com.dummy.myerp.business.impl.manager;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import com.dummy.myerp.consumer.dao.contrat.ComptabiliteDao;
 import com.dummy.myerp.consumer.dao.contrat.DaoProxy;
 import com.dummy.myerp.model.bean.comptabilite.*;
+import com.dummy.myerp.technical.exception.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import com.dummy.myerp.technical.exception.FunctionalException;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-
 import static org.junit.Assert.assertEquals;
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="classpath:META-INF/application-context.xml" )
+
+
 
 public class ComptabiliteManagerImplTest {
 
@@ -86,7 +84,7 @@ public class ComptabiliteManagerImplTest {
         //Given
         EcritureComptable vEcritureComptable = new EcritureComptable();
         vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
-        vEcritureComptable.setDate(new Date());
+        vEcritureComptable.setDate( Date.from(LocalDate.of(2020,01,12).atStartOfDay(ZoneId.systemDefault()).toInstant()) );
         ComptabiliteManagerImpl comptabiliteManager = new ComptabiliteManagerImpl();
 
         DaoProxy daoProxy = Mockito.mock(DaoProxy.class);
@@ -139,6 +137,77 @@ public class ComptabiliteManagerImplTest {
 
 
         assertEquals("AC-2016/00001", stringBuilder.toString());
+    }
+
+    @Test
+    public void shouldCheckEcritureComptableContext() throws NotFoundException, FunctionalException {
+        EcritureComptable vEcritureComptable = new EcritureComptable();
+        vEcritureComptable.setReference("AC-2016/00001");
+        ComptabiliteManagerImpl comptabiliteManager = new ComptabiliteManagerImpl();
+        DaoProxy daoProxy = Mockito.mock(DaoProxy.class);
+        ComptabiliteDao comptabiliteDao = Mockito.mock(ComptabiliteDao.class);
+        Mockito.doReturn(comptabiliteDao).when(daoProxy).getComptabiliteDao();
+        comptabiliteManager.setDaoProxy(daoProxy);
+        Mockito.doThrow(NotFoundException.class).when(comptabiliteDao).getEcritureComptableByRef(Mockito.anyString());
+        comptabiliteManager.checkEcritureComptableContext(vEcritureComptable);
+    }
+
+    @Test(expected = FunctionalException.class)
+    public void shouldCheckEcritureComptableContextWithError() throws NotFoundException, FunctionalException {
+        EcritureComptable vEcritureComptable = new EcritureComptable();
+        vEcritureComptable.setReference("AC-2016/00001");
+        ComptabiliteManagerImpl comptabiliteManager = new ComptabiliteManagerImpl();
+        DaoProxy daoProxy = Mockito.mock(DaoProxy.class);
+        ComptabiliteDao comptabiliteDao = Mockito.mock(ComptabiliteDao.class);
+        Mockito.doReturn(comptabiliteDao).when(daoProxy).getComptabiliteDao();
+        comptabiliteManager.setDaoProxy(daoProxy);
+        EcritureComptable vECRef = new EcritureComptable();
+        vECRef.setReference("AC-2016/00001");
+        vECRef.setId(11);
+        Mockito.doReturn(vECRef).when(comptabiliteDao).getEcritureComptableByRef(Mockito.anyString());
+        comptabiliteManager.checkEcritureComptableContext(vEcritureComptable);
+    }
+
+    @Test
+    public void shouldCheckEcritureComptableContextWithoutError() throws NotFoundException, FunctionalException {
+        EcritureComptable vEcritureComptable = new EcritureComptable();
+        vEcritureComptable.setId(11);
+        vEcritureComptable.setReference("AC-2016/00001");
+        ComptabiliteManagerImpl comptabiliteManager = new ComptabiliteManagerImpl();
+        DaoProxy daoProxy = Mockito.mock(DaoProxy.class);
+        ComptabiliteDao comptabiliteDao = Mockito.mock(ComptabiliteDao.class);
+        Mockito.doReturn(comptabiliteDao).when(daoProxy).getComptabiliteDao();
+        comptabiliteManager.setDaoProxy(daoProxy);
+        EcritureComptable vECRef = new EcritureComptable();
+        vECRef.setReference("AC-2016/00001");
+        vECRef.setId(11);
+        Mockito.doReturn(vECRef).when(comptabiliteDao).getEcritureComptableByRef(Mockito.anyString());
+        comptabiliteManager.checkEcritureComptableContext(vEcritureComptable);
+    }
+
+    @Test
+    public void shouldCheckEcritureComptable() throws NotFoundException, FunctionalException {
+        EcritureComptable vEcritureComptable;
+        vEcritureComptable = new EcritureComptable();
+        vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
+        vEcritureComptable.setReference("AC-2016/00001");
+        vEcritureComptable.setDate(new Date());
+        vEcritureComptable.setLibelle("Achat");
+        vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
+                null, new BigDecimal(1234),
+                null));
+        vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(2),
+                null, null,
+                new BigDecimal(1234)));
+        ComptabiliteManagerImpl comptabiliteManager = new ComptabiliteManagerImpl();
+        DaoProxy daoProxy = Mockito.mock(DaoProxy.class);
+        ComptabiliteDao comptabiliteDao = Mockito.mock(ComptabiliteDao.class);
+        Mockito.doReturn(comptabiliteDao).when(daoProxy).getComptabiliteDao();
+        Mockito.doThrow(NotFoundException.class).when(comptabiliteDao).getEcritureComptableByRef(Mockito.anyString());
+        comptabiliteManager.setDaoProxy(daoProxy);
+        comptabiliteManager.checkEcritureComptable(vEcritureComptable);
+
+
     }
 
 }

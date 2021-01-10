@@ -1,10 +1,7 @@
 package com.dummy.myerp.consumer.dao.impl.db.dao;
 
 import com.dummy.myerp.consumer.dao.contrat.ComptabiliteDao;
-import com.dummy.myerp.model.bean.comptabilite.CompteComptable;
-import com.dummy.myerp.model.bean.comptabilite.EcritureComptable;
-import com.dummy.myerp.model.bean.comptabilite.JournalComptable;
-import com.dummy.myerp.model.bean.comptabilite.LigneEcritureComptable;
+import com.dummy.myerp.model.bean.comptabilite.*;
 import com.dummy.myerp.technical.exception.FunctionalException;
 import com.dummy.myerp.technical.exception.NotFoundException;
 import org.junit.Ignore;
@@ -132,13 +129,23 @@ public class ComptabiliteDaoImplTest {
 
     @Test(expected = NotFoundException.class)
     public void shouldReturnNotFoundExceptionForGetEcritureComptableByRef() throws NotFoundException {
+
+        //Appel de la methode a tester
+        EcritureComptable  ecritureComptable = comptabiliteDao.getEcritureComptableByRef("AC-2016/00002");
+
+    }
+
+    @Test
+    public void testGetEcritureComptableByRef() throws NotFoundException {
         //Declare datasource h2
         JdbcTemplate vJdbcTemplate = new JdbcTemplate(dataSource);
         //Insertion d'une ecriture comptable ds la db h2 pour avoir un retour a tester
         String sql = "insert into myerp.ecriture_comptable(id,journal_code,reference,date,libelle)  values (1,'AC','AC-2016/00001','2016-12-31','Cartouches d’imprimante')";
         vJdbcTemplate.execute(sql);
         //Appel de la methode a tester
-        EcritureComptable  ecritureComptable = comptabiliteDao.getEcritureComptableByRef("AC-2016/00002");
+        EcritureComptable  ecritureComptable = comptabiliteDao.getEcritureComptableByRef("AC-2016/00001");
+
+        assertEquals("AC-2016/00001",ecritureComptable.getReference());
 
     }
 
@@ -225,10 +232,12 @@ public class ComptabiliteDaoImplTest {
         String sql = "insert into myerp.ecriture_comptable(id,journal_code,reference,date,libelle)  values (1,'AC','AC-2016/00001','2016-12-31','Cartouches d’imprimante')";
         vJdbcTemplate.execute(sql);
         EcritureComptable  ecritureComptable = comptabiliteDao.getEcritureComptableByRef("AC-2016/00001");
-        //do
+
+        assertEquals("AC-2016/00001",ecritureComptable.getReference());
+
         comptabiliteDaoImp.deleteEcritureComptable(ecritureComptable.getId());
         //Shoult return not found exeption
-        EcritureComptable  deletedEcritureComptable = comptabiliteDao.getEcritureComptableByRef("AC-2016/00001");
+        comptabiliteDao.getEcritureComptableByRef("AC-2016/00001");
     }
 
     @Test
@@ -236,20 +245,34 @@ public class ComptabiliteDaoImplTest {
         //When
         EcritureComptable  ecritureComptable = new EcritureComptable(1);
         EcritureComptable  ecritureComptableWithoutListLigne = new EcritureComptable(1);
-        List<String> listSize0Expected = Arrays.asList();
+
         JdbcTemplate vJdbcTemplate = new JdbcTemplate(dataSource);
-        String sql = "insert into myerp.ligne_ecriture_comptable(ecriture_id ,ligne_id,compte_comptable_numero,libelle,debit,credit)  values (1,1,606,'Cartouches HP',null,null)";
+        String sql = "insert into myerp.ligne_ecriture_comptable(ecriture_id ,ligne_id,compte_comptable_numero,libelle,debit,credit) " +
+                " values (1,1,606,'Cartouches HP',null,null)";
         vJdbcTemplate.execute(sql);
         //do
-        comptabiliteDaoImp.loadListLigneEcriture(ecritureComptable);
         comptabiliteDaoImp.deleteListLigneEcritureComptable(ecritureComptable.getId());
         comptabiliteDaoImp.loadListLigneEcriture(ecritureComptableWithoutListLigne);
-        //then
-        assertEquals(listSize0Expected,ecritureComptableWithoutListLigne.getListLigneEcriture());
+
+        assertEquals(Arrays.asList(),ecritureComptableWithoutListLigne.getListLigneEcriture());
 
     }
 
 
+
+    @Test
+    public void shouldUpdateSequenceEcritureComptable() throws NotFoundException {
+        JdbcTemplate vJdbcTemplate = new JdbcTemplate(dataSource);
+        String sql = "insert into myerp.sequence_ecriture_comptable(journal_code,annee,derniere_valeur)  values ('AC',2016,1)";
+        vJdbcTemplate.execute(sql);
+        SequenceEcritureComptable sequenceEcritureComptable = new SequenceEcritureComptable(2016,2,"AC");
+
+        comptabiliteDaoImp.updateSequence(sequenceEcritureComptable);
+        SequenceEcritureComptable sequenceEcritureComptableUpdated =comptabiliteDaoImp.getLastSequence("AC",2016);
+
+        assertEquals(sequenceEcritureComptable.getDerniereValeur(),sequenceEcritureComptableUpdated.getDerniereValeur());
+
+    }
 
 
 
