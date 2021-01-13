@@ -20,7 +20,6 @@ import com.dummy.myerp.technical.exception.NotFoundException;
  * Implémentation de l'interface {@link ComptabiliteDao}
  */
 public class ComptabiliteDaoImpl extends AbstractDbConsumer implements ComptabiliteDao {
-
     // ==================== Constructeurs ====================
     /**
      * Instance unique de la classe (design pattern Singleton)
@@ -35,6 +34,11 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
     public static ComptabiliteDaoImpl getInstance() {
         return ComptabiliteDaoImpl.INSTANCE;
     }
+
+    //Attribus d'instance
+    JdbcTemplate vJdbcTemplate;
+
+    NamedParameterJdbcTemplate vJdbcTemplateNamed;
 
     /**
      * Constructeur.
@@ -56,7 +60,6 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
 
     @Override
     public List<CompteComptable> getListCompteComptable() {
-        JdbcTemplate vJdbcTemplate = new JdbcTemplate(this.getDataSource(DataSourcesEnum.MYERP));
         CompteComptableRM vRM = new CompteComptableRM();
         List<CompteComptable> vList = vJdbcTemplate.query(SQLgetListCompteComptable, vRM);
         return vList;
@@ -74,7 +77,6 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
 
     @Override
     public List<JournalComptable> getListJournalComptable() {
-        JdbcTemplate vJdbcTemplate = new JdbcTemplate(this.getDataSource(DataSourcesEnum.MYERP));
         JournalComptableRM vRM = new JournalComptableRM();
         List<JournalComptable> vList = vJdbcTemplate.query(SQLgetListJournalComptable, vRM);
         return vList;
@@ -94,7 +96,7 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
 
     @Override
     public List<EcritureComptable> getListEcritureComptable() {
-        JdbcTemplate vJdbcTemplate = new JdbcTemplate(this.getDataSource(DataSourcesEnum.MYERP));
+//        JdbcTemplate vJdbcTemplate = new JdbcTemplate(this.getDataSource(DataSourcesEnum.MYERP));
         EcritureComptableRM vRM = new EcritureComptableRM();
         List<EcritureComptable> vList = vJdbcTemplate.query(SQLgetListEcritureComptable, vRM);
         return vList;
@@ -112,13 +114,12 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
 
     @Override
     public EcritureComptable getEcritureComptable(Integer pId) throws NotFoundException {
-        NamedParameterJdbcTemplate vJdbcTemplate = new NamedParameterJdbcTemplate(getDataSource(DataSourcesEnum.MYERP));
         MapSqlParameterSource vSqlParams = new MapSqlParameterSource();
         vSqlParams.addValue("id", pId);
         EcritureComptableRM vRM = new EcritureComptableRM();
         EcritureComptable vBean;
         try {
-            vBean = vJdbcTemplate.queryForObject(SQLgetEcritureComptable, vSqlParams, vRM);
+            vBean = vJdbcTemplateNamed.queryForObject(SQLgetEcritureComptable, vSqlParams, vRM);
         } catch (EmptyResultDataAccessException vEx) {
             throw new NotFoundException("EcritureComptable non trouvée : id=" + pId);
         }
@@ -137,13 +138,12 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
 
     @Override
     public EcritureComptable getEcritureComptableByRef(String pReference) throws NotFoundException {
-        NamedParameterJdbcTemplate vJdbcTemplate = new NamedParameterJdbcTemplate(getDataSource(DataSourcesEnum.MYERP));
         MapSqlParameterSource vSqlParams = new MapSqlParameterSource();
         vSqlParams.addValue("reference", pReference);
         EcritureComptableRM vRM = new EcritureComptableRM();
         EcritureComptable vBean;
         try {
-            vBean = vJdbcTemplate.queryForObject(SQLgetEcritureComptableByRef, vSqlParams, vRM);
+            vBean = vJdbcTemplateNamed.queryForObject(SQLgetEcritureComptableByRef, vSqlParams, vRM);
         } catch (EmptyResultDataAccessException vEx) {
             throw new NotFoundException("EcritureComptable non trouvée : reference=" + pReference);
         }
@@ -162,11 +162,10 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
 
     @Override
     public void loadListLigneEcriture(EcritureComptable pEcritureComptable) {
-        NamedParameterJdbcTemplate vJdbcTemplate = new NamedParameterJdbcTemplate(getDataSource(DataSourcesEnum.MYERP));
         MapSqlParameterSource vSqlParams = new MapSqlParameterSource();
         vSqlParams.addValue("ecriture_id", pEcritureComptable.getId());
         LigneEcritureComptableRM vRM = new LigneEcritureComptableRM();
-        List<LigneEcritureComptable> vList = vJdbcTemplate.query(SQLloadListLigneEcriture, vSqlParams, vRM);
+        List<LigneEcritureComptable> vList = vJdbcTemplateNamed.query(SQLloadListLigneEcriture, vSqlParams, vRM);
         pEcritureComptable.getListLigneEcriture().clear();
         pEcritureComptable.getListLigneEcriture().addAll(vList);
     }
@@ -336,5 +335,13 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
         vSqlParams.addValue("annee", sequenceEcritureComptable.getAnnee());
         vSqlParams.addValue("valeur", sequenceEcritureComptable.getDerniereValeur());
         vJdbcTemplate.update(sql, vSqlParams);
+    }
+
+    public void setvJdbcTemplate(JdbcTemplate vJdbcTemplate) {
+        this.vJdbcTemplate = vJdbcTemplate;
+    }
+
+    public void setvJdbcTemplateNamed(NamedParameterJdbcTemplate vJdbcTemplateNamed) {
+        this.vJdbcTemplateNamed = vJdbcTemplateNamed;
     }
 }

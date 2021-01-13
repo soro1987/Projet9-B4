@@ -56,6 +56,8 @@ public class EcritureComptable {
     public EcritureComptable() {
     }
 
+
+
     // ==================== Getters/Setters ====================
     public Integer getId() {
         return id;
