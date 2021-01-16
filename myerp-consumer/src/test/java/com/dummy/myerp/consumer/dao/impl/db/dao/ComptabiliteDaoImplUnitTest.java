@@ -1,22 +1,18 @@
 package com.dummy.myerp.consumer.dao.impl.db.dao;
 
 import com.dummy.myerp.consumer.dao.contrat.ComptabiliteDao;
-import com.dummy.myerp.consumer.dao.impl.db.rowmapper.comptabilite.CompteComptableRM;
-import com.dummy.myerp.consumer.dao.impl.db.rowmapper.comptabilite.EcritureComptableRM;
-import com.dummy.myerp.consumer.dao.impl.db.rowmapper.comptabilite.JournalComptableRM;
-import com.dummy.myerp.consumer.dao.impl.db.rowmapper.comptabilite.LigneEcritureComptableRM;
+import com.dummy.myerp.consumer.dao.impl.db.rowmapper.comptabilite.*;
 import com.dummy.myerp.model.bean.comptabilite.*;
 import com.dummy.myerp.technical.exception.NotFoundException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
@@ -82,7 +78,7 @@ public class ComptabiliteDaoImplUnitTest {
     @Test
     public void shouldReturnEcritureComptable() throws NotFoundException {
         JournalComptable journalComptable = new JournalComptable("AC","Cartouches d’imprimante");
-        Date date = new Date();
+        Date date =  Date.from(LocalDate.of(2020,01,12).atStartOfDay(ZoneId.systemDefault()).toInstant());
         EcritureComptable ecritureComptableMock =new EcritureComptable(1,journalComptable,"AC-2016/00001",date,"Cartouches d’imprimante");
         Mockito.doReturn(ecritureComptableMock)
                 .when(vJdbcTemplateNamed)
@@ -92,7 +88,7 @@ public class ComptabiliteDaoImplUnitTest {
         assertEquals(1,ecritureComptable.getId().intValue());
         assertEquals("AC",ecritureComptable.getJournal().getCode());
         assertEquals("AC-2016/00001",ecritureComptable.getReference());
-//        assertEquals("2016-12-31",ecritureComptable.getDate().toString());
+        assertEquals(date,ecritureComptable.getDate());
         assertEquals("Cartouches d’imprimante",ecritureComptable.getLibelle());
     }
 
@@ -166,7 +162,7 @@ public class ComptabiliteDaoImplUnitTest {
     }
 
     @Test
-    public void shouldUpdateListLigneEcriture() throws NotFoundException {
+    public void shouldInsertUpdateListLigneEcriture() throws NotFoundException {
         EcritureComptable  ecritureComptable = new EcritureComptable(1);
         CompteComptable compteComptable = new CompteComptable(606,"Cartouches HP");
         LigneEcritureComptable ligneEcritureComptable = new LigneEcritureComptable(compteComptable,"Cartouches HP",new BigDecimal(0),new BigDecimal(100));
@@ -174,16 +170,21 @@ public class ComptabiliteDaoImplUnitTest {
         List<LigneEcritureComptable> vList = Arrays.asList(ligneEcritureComptable,ligneEcritureComptable2);
         ecritureComptable.getListLigneEcriture().addAll(vList);
 
-        //Appel de la methode a tester
+        Mockito.doReturn(1)
+                .when(vJdbcTemplateNamed)
+                .update(Mockito.anyString(),Mockito.isA(MapSqlParameterSource.class));
+        Mockito.doReturn(vList)
+                .when(vJdbcTemplateNamed)
+                .query(Mockito.anyString(),Mockito.isA(MapSqlParameterSource.class),Mockito.isA(LigneEcritureComptableRM.class));
         comptabiliteDao.insertListLigneEcritureComptable(ecritureComptable);
         comptabiliteDao.loadListLigneEcriture(ecritureComptable);
         List<LigneEcritureComptable> listLigneEcriture = ecritureComptable.getListLigneEcriture();
 
-        assertEquals(2,listLigneEcriture.size());
-        assertEquals(1,listLigneEcriture.stream().map(LigneEcritureComptable::getLibelle).filter(s -> s.equals("Cartouches HP")).count());
-        assertEquals(1,listLigneEcriture.stream().map(LigneEcritureComptable::getLibelle).filter(s -> s.equals("Cartouches Dell")).count());
-
+        assertEquals(vList,listLigneEcriture);
     }
+
+
+
 
     @Test    public void shouldUpdateEcritureComptable() throws NotFoundException {
         //Cree EcritureComptable
@@ -197,19 +198,37 @@ public class ComptabiliteDaoImplUnitTest {
         //Affecter les deux lignes a EcritureComptable
         List<LigneEcritureComptable> vList = Arrays.asList(ligneEcritureComptable,ligneEcritureComptable2);
         ecritureComptable.getListLigneEcriture().addAll(vList);
-        //Ajouter l'EcritureComptable
+        Mockito.doReturn(1).when(vJdbcTemplate).queryForObject(Mockito.anyString(),Mockito.eq(Integer.class));
+
+        Mockito.doReturn(1)
+                .when(vJdbcTemplateNamed)
+                .update(Mockito.anyString(),Mockito.isA(MapSqlParameterSource.class));
+        Mockito.doReturn(1)
+                .when(vJdbcTemplate)
+                .update(Mockito.anyString(),Mockito.isA(MapSqlParameterSource.class));
+
+        //Ajouter l'EcritureComptable en db sans l avoir modifier
         comptabiliteDao.insertEcritureComptable(ecritureComptable);
+
         //Modifier le libelle de l'EcritureComptable
         ecritureComptable.setLibelle("Cartouches CANON");
+
         //Modifier le libelle des deux lignes
         ligneEcritureComptable.setLibelle("Cartouches EPSON");
         ligneEcritureComptable2.setLibelle("Cartouches GENERIQUE");
-        //Appeler updateEcritureComptable avec EcritureComptable en paramettre
+
+        //Proceder a la mise a jour en appelent updateEcritureComptable avec ecritureComptable en paramettre
         comptabiliteDao.updateEcritureComptable(ecritureComptable);
-        //Recuperer l ecriture comptable avec ces deux lignes
+        Mockito.doReturn(ecritureComptable)
+                .when(vJdbcTemplateNamed)
+                .queryForObject(Mockito.anyString(),Mockito.isA(MapSqlParameterSource.class),
+                        Mockito.isA(EcritureComptableRM.class));
+        //Recuperer l ecriture comptable avec ces deux lignes mise a jour
         EcritureComptable  ecritureComptableRetour = comptabiliteDao.getEcritureComptable(ecritureComptable.getId());
-        //Verifier que le libelle de l EcritureComptable corespond a la valeur de modification
+
+        //Verifier que le libelle de l ecritureComptable a bien etait modifier
         assertEquals("Cartouches CANON",ecritureComptableRetour.getLibelle());
+
         //Verifier que le libelle des deux lignes corespond a la valeur de modification
         assertEquals("Cartouches EPSON",ecritureComptableRetour.getListLigneEcriture().get(0).getLibelle());
         assertEquals("Cartouches GENERIQUE",ecritureComptableRetour.getListLigneEcriture().get(1).getLibelle());
@@ -220,9 +239,17 @@ public class ComptabiliteDaoImplUnitTest {
 
     @Test(expected = NotFoundException.class)
     public void shouldReturnNotFoundExceptionWhenEcritureComptableIsDeleted() throws NotFoundException {
-        //When
-        String sql = "insert into myerp.ecriture_comptable(id,journal_code,reference,date,libelle)  values (1,'AC','AC-2016/00001','2016-12-31','Cartouches d’imprimante')";
-        vJdbcTemplate.execute(sql);
+        JournalComptable journalComptable = new JournalComptable("AC","Cartouches d’imprimante");
+        Date date =  Date.from(LocalDate.of(2020,01,12).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        EcritureComptable ecritureComptable1 = new EcritureComptable(1,journalComptable,"AC-2016/00001",date,"Cartouches d’imprimante");
+        Mockito.doReturn(ecritureComptable1)
+                .doThrow(NotFoundException.class)
+                .when(vJdbcTemplateNamed)
+                .queryForObject(Mockito.anyString(),Mockito.isA(MapSqlParameterSource.class),
+                        Mockito.isA(EcritureComptableRM.class));
+        Mockito.doReturn(1)
+                .when(vJdbcTemplate)
+                .update(Mockito.anyString(),Mockito.isA(MapSqlParameterSource.class));
         EcritureComptable  ecritureComptable = comptabiliteDao.getEcritureComptableByRef("AC-2016/00001");
 
         assertEquals("AC-2016/00001",ecritureComptable.getReference());
@@ -237,11 +264,14 @@ public class ComptabiliteDaoImplUnitTest {
         //When
         EcritureComptable  ecritureComptable = new EcritureComptable(1);
         EcritureComptable  ecritureComptableWithoutListLigne = new EcritureComptable(1);
+        Mockito.doReturn(1)
+                .when(vJdbcTemplate)
+                .update(Mockito.anyString(),Mockito.isA(MapSqlParameterSource.class));
 
-        String sql = "insert into myerp.ligne_ecriture_comptable(ecriture_id ,ligne_id,compte_comptable_numero,libelle,debit,credit) " +
-                " values (1,1,606,'Cartouches HP',null,null)";
-        vJdbcTemplate.execute(sql);
-        //do
+        Mockito.doReturn(Arrays.asList())
+                .when(vJdbcTemplateNamed)
+                .query(Mockito.anyString(),Mockito.isA(MapSqlParameterSource.class),
+                        Mockito.isA(LigneEcritureComptableRM.class));
         comptabiliteDao.deleteListLigneEcritureComptable(ecritureComptable.getId());
         comptabiliteDao.loadListLigneEcriture(ecritureComptableWithoutListLigne);
 
@@ -253,9 +283,15 @@ public class ComptabiliteDaoImplUnitTest {
 
     @Test
     public void shouldUpdateSequenceEcritureComptable() throws NotFoundException {
-        String sql = "insert into myerp.sequence_ecriture_comptable(journal_code,annee,derniere_valeur)  values ('AC',2016,1)";
-        vJdbcTemplate.execute(sql);
         SequenceEcritureComptable sequenceEcritureComptable = new SequenceEcritureComptable(2016,2,"AC");
+        Mockito.doReturn(1)
+                .when(vJdbcTemplate)
+                .update(Mockito.anyString(),Mockito.isA(MapSqlParameterSource.class));
+        Mockito.doReturn(sequenceEcritureComptable)
+                .doThrow(NotFoundException.class)
+                .when(vJdbcTemplateNamed)
+                .queryForObject(Mockito.anyString(),Mockito.isA(MapSqlParameterSource.class),
+                        Mockito.isA(SequenceEcritureComptableRM.class));
 
         comptabiliteDao.updateSequence(sequenceEcritureComptable);
         SequenceEcritureComptable sequenceEcritureComptableUpdated =comptabiliteDao.getLastSequence("AC",2016);

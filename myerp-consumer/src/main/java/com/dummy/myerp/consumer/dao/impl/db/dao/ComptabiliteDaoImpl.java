@@ -185,7 +185,6 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
     @Override
     public void insertEcritureComptable(EcritureComptable pEcritureComptable) {
         // ===== Ecriture Comptable
-        NamedParameterJdbcTemplate vJdbcTemplate = new NamedParameterJdbcTemplate(getDataSource(DataSourcesEnum.MYERP));
         MapSqlParameterSource vSqlParams = new MapSqlParameterSource();
         vSqlParams.addValue("journal_code", pEcritureComptable.getJournal().getCode());
         vSqlParams.addValue("reference", pEcritureComptable.getReference());
@@ -218,21 +217,20 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
      * @param pEcritureComptable l'écriture comptable
      */
     protected void insertListLigneEcritureComptable(EcritureComptable pEcritureComptable) {
-        NamedParameterJdbcTemplate vJdbcTemplate = new NamedParameterJdbcTemplate(getDataSource(DataSourcesEnum.MYERP));
         MapSqlParameterSource vSqlParams = new MapSqlParameterSource();
         vSqlParams.addValue("ecriture_id", pEcritureComptable.getId());
 
         int vLigneId = 0;
         for (LigneEcritureComptable vLigne : pEcritureComptable.getListLigneEcriture()) {
             vLigneId++;
+
             vSqlParams.addValue("ligne_id", vLigneId);
             vSqlParams.addValue("compte_comptable_numero", vLigne.getCompteComptable().getNumero());
             vSqlParams.addValue("libelle", vLigne.getLibelle());
             vSqlParams.addValue("debit", vLigne.getDebit());
-
             vSqlParams.addValue("credit", vLigne.getCredit());
 
-            vJdbcTemplate.update(SQLinsertListLigneEcritureComptable, vSqlParams);
+            vJdbcTemplateNamed.update(SQLinsertListLigneEcritureComptable, vSqlParams);
         }
     }
 
@@ -251,7 +249,6 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
     @Override
     public void updateEcritureComptable(EcritureComptable pEcritureComptable) {
         // ===== Ecriture Comptable
-        NamedParameterJdbcTemplate vJdbcTemplate = new NamedParameterJdbcTemplate(getDataSource(DataSourcesEnum.MYERP));
         MapSqlParameterSource vSqlParams = new MapSqlParameterSource();
         vSqlParams.addValue("id", pEcritureComptable.getId());
         vSqlParams.addValue("journal_code", pEcritureComptable.getJournal().getCode());
@@ -259,7 +256,7 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
         vSqlParams.addValue("date", pEcritureComptable.getDate(), Types.DATE);
         vSqlParams.addValue("libelle", pEcritureComptable.getLibelle());
 
-        vJdbcTemplate.update(SQLupdateEcritureComptable, vSqlParams);
+        vJdbcTemplateNamed.update(SQLupdateEcritureComptable, vSqlParams);
 
         // ===== Liste des lignes d'écriture
         this.deleteListLigneEcritureComptable(pEcritureComptable.getId());
@@ -284,10 +281,9 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
         this.deleteListLigneEcritureComptable(pId);
 
         // ===== Suppression de l'écriture
-        NamedParameterJdbcTemplate vJdbcTemplate = new NamedParameterJdbcTemplate(getDataSource(DataSourcesEnum.MYERP));
         MapSqlParameterSource vSqlParams = new MapSqlParameterSource();
         vSqlParams.addValue("id", pId);
-        vJdbcTemplate.update(SQLdeleteEcritureComptable, vSqlParams);
+        vJdbcTemplateNamed.update(SQLdeleteEcritureComptable, vSqlParams);
     }
 
     /**
@@ -305,21 +301,19 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
      * @param pEcritureId id de l'écriture comptable
      */
     protected void deleteListLigneEcritureComptable(Integer pEcritureId) {
-        NamedParameterJdbcTemplate vJdbcTemplate = new NamedParameterJdbcTemplate(getDataSource(DataSourcesEnum.MYERP));
         MapSqlParameterSource vSqlParams = new MapSqlParameterSource();
         vSqlParams.addValue("ecriture_id", pEcritureId);
-        vJdbcTemplate.update(SQLdeleteListLigneEcritureComptable, vSqlParams);
+        vJdbcTemplateNamed.update(SQLdeleteListLigneEcritureComptable, vSqlParams);
     }
 
     public SequenceEcritureComptable getLastSequence(String codeJournal, Integer annee) {
-        NamedParameterJdbcTemplate vJdbcTemplate = new NamedParameterJdbcTemplate(this.getDataSource(DataSourcesEnum.MYERP));
         SequenceEcritureComptableRM vRM = new SequenceEcritureComptableRM();
         String sql = "Select * from sequence_ecriture_comptable where journal_code = :code and annee = :annee order by derniere_valeur desc limit 1";
         MapSqlParameterSource vSqlParams = new MapSqlParameterSource();
         vSqlParams.addValue("code", codeJournal);
         vSqlParams.addValue("annee", annee);
         try {
-            return vJdbcTemplate.queryForObject(sql, vSqlParams, vRM);
+            return vJdbcTemplateNamed.queryForObject(sql, vSqlParams, vRM);
         } catch (DataAccessException e) {
 
             return null;
@@ -328,13 +322,12 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
 
     @Override
     public void updateSequence(SequenceEcritureComptable sequenceEcritureComptable) {
-        NamedParameterJdbcTemplate vJdbcTemplate = new NamedParameterJdbcTemplate(this.getDataSource(DataSourcesEnum.MYERP));
         String sql = "update sequence_ecriture_comptable set derniere_valeur = :valeur where journal_code = :code and annee = :annee";
         MapSqlParameterSource vSqlParams = new MapSqlParameterSource();
         vSqlParams.addValue("code", sequenceEcritureComptable.getCodeJournal());
         vSqlParams.addValue("annee", sequenceEcritureComptable.getAnnee());
         vSqlParams.addValue("valeur", sequenceEcritureComptable.getDerniereValeur());
-        vJdbcTemplate.update(sql, vSqlParams);
+        vJdbcTemplateNamed.update(sql, vSqlParams);
     }
 
     public void setvJdbcTemplate(JdbcTemplate vJdbcTemplate) {
@@ -343,5 +336,10 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
 
     public void setvJdbcTemplateNamed(NamedParameterJdbcTemplate vJdbcTemplateNamed) {
         this.vJdbcTemplateNamed = vJdbcTemplateNamed;
+    }
+
+    @Override
+    public JdbcTemplate getvJdbcTemplate(DataSourcesEnum pDataSourcesId) {
+        return vJdbcTemplate;
     }
 }
