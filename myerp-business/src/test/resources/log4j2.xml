@@ -6,6 +6,13 @@
         </Console>
     </Appenders>
     <Loggers>
+        <Logger level="debug" name="org.springframework.jdbc.core.JdbcTemplate">
+            <AppenderRef ref="console"/>
+        </Logger>
+
+        <Logger level="debug" name="org.springframework.jdbc.core.StatementCreatorUtils">
+            <AppenderRef ref="console"/>
+        </Logger>
         <Root level="ERROR">
             <AppenderRef ref="console"/>
         </Root>

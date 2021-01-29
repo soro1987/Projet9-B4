@@ -13,6 +13,7 @@
         <property name="vJdbcTemplate" ref="jdbcTemplate">
 
         </property>
+
         <property name="vJdbcTemplateNamed" ref="namedJdbcTemplate">
 
         </property>
@@ -51,17 +52,18 @@
                 ORDER BY ligne_id
             </value>
         </property>
+
         <property name="SQLinsertEcritureComptable">
             <value>
                 INSERT INTO myerp.ecriture_comptable (
-                    id,
-                    journal_code, reference, date, libelle
+                    id,journal_code, reference, date, libelle
                 ) VALUES (
                     nextval('myerp.ecriture_comptable_id_seq'),
-                    :journal_code, :reference, :date, :libelle
+                :journal_code, :reference, :date, :libelle
                 )
             </value>
         </property>
+        <!-- TODO       Erreur manquer virgule apres debit ligne 73-->
         <property name="SQLinsertListLigneEcritureComptable">
             <value>
                 INSERT INTO myerp.ligne_ecriture_comptable (

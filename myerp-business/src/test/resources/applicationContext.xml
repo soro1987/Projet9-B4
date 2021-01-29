@@ -7,9 +7,11 @@
     <bean id="dataSourceMYERP"  class="org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy">
         <constructor-arg>
             <bean class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
-                <property name="driverClass" value="org.h2.Driver" />
+                <property name="driverClass" value="org.postgresql.Driver" />
                 <property name="url"
-                          value="jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=Oracle;TRACE_LEVEL_SYSTEM_OUT=2;INIT=RUNSCRIPT FROM 'classpath:create.sql'" />
+                          value="jdbc:postgresql://localhost:9032/db_myerp" />
+                <property name="username" value="usr_myerp"/>
+                <property name="password" value="myerp"/>
             </bean>
         </constructor-arg>
     </bean>
