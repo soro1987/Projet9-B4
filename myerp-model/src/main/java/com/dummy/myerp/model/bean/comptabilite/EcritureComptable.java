@@ -24,6 +24,7 @@ public class EcritureComptable {
     /** Journal comptable */
     @NotNull private JournalComptable journal;
     /** The Reference. */
+    // TODO erreur pattern
     @Pattern(regexp = "\\w{2}-\\d{4}/\\d{5}")
     private String reference;
     /** The Date. */
@@ -117,7 +118,7 @@ public class EcritureComptable {
     public BigDecimal getTotalCredit() {
         BigDecimal vRetour = BigDecimal.ZERO;
         for (LigneEcritureComptable vLigneEcritureComptable : listLigneEcriture) {
-            //change getDebit par getCredit
+            // TODO erreur change getDebit par getCredit
             if (vLigneEcritureComptable.getCredit() != null) {
                 vRetour = vRetour.add(vLigneEcritureComptable.getCredit());
             }

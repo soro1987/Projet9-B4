@@ -40,6 +40,6 @@ pipeline {
     }
 }
 
+//cpmpare to , get credit get d
 //sql ,
-//formatage
-//cpmpare to , get credit get debit , chechk ecriture comptable
+//formatageebit , chechk ecriture comptable
