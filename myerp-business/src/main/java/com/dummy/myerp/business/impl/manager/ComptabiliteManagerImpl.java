@@ -7,6 +7,9 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
+import com.dummy.myerp.business.utils.LoggerUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.dummy.myerp.model.bean.comptabilite.*;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,10 +23,12 @@ import com.dummy.myerp.technical.exception.NotFoundException;
 /**
  * Comptabilite manager implementation.
  */
+
 public class ComptabiliteManagerImpl extends AbstractBusinessManager implements ComptabiliteManager {
 
 
     // ==================== Attributs ====================
+    private static final Logger LOGGER = LogManager.getLogger(ComptabiliteManagerImpl.class);
 
 
     // ==================== Constructeurs ====================
@@ -119,15 +124,20 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
         // ===== Vérification des contraintes unitaires sur les attributs de l'écriture
         Set<ConstraintViolation<EcritureComptable>> vViolations = getConstraintValidator().validate(pEcritureComptable);
         if (!vViolations.isEmpty()) {
-            throw new FunctionalException("L'écriture comptable ne respecte pas les règles de gestion.",
-                                          new ConstraintViolationException(
-                                              "L'écriture comptable ne respecte pas les contraintes de validation",
-                                              vViolations));
+            FunctionalException ex = new FunctionalException("L'écriture comptable ne respecte pas les règles de gestion.",
+                    new ConstraintViolationException(
+                            "L'écriture comptable ne respecte pas les contraintes de validation",
+                            vViolations));
+            LoggerUtils.logFunctionalException(ex);
+            throw ex;
         }
 
         // ===== RG_Compta_2 : Pour qu'une écriture comptable soit valide, elle doit être équilibrée
         if (!pEcritureComptable.isEquilibree()) {
-            throw new FunctionalException("L'écriture comptable n'est pas équilibrée.");
+
+            FunctionalException ex = new FunctionalException("L'écriture comptable n'est pas équilibrée.");
+            LoggerUtils.logFunctionalException(ex);
+            throw ex;
         }
 
         // ===== RG_Compta_3 : une écriture comptable doit avoir au moins 2 lignes d'écriture (1 au débit, 1 au crédit)
@@ -148,8 +158,10 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
         if (pEcritureComptable.getListLigneEcriture().size() < 2
             || vNbrCredit < 1
             || vNbrDebit < 1) {
-            throw new FunctionalException(
+            FunctionalException ex = new FunctionalException(
                 "L'écriture comptable doit avoir au moins deux lignes : une ligne au débit et une ligne au crédit.");
+            LoggerUtils.logFunctionalException(ex);
+            throw ex;
         }
 
         // TODO ===== RG_Compta_5 : Format et contenu de la référence
@@ -177,10 +189,13 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
                 // c'est qu'il y a déjà une autre écriture avec la même référence
                 if (pEcritureComptable.getId() == null
                     || !pEcritureComptable.getId().equals(vECRef.getId())) {
-                    throw new FunctionalException("Une autre écriture comptable existe déjà avec la même référence.");
+                    FunctionalException ex = new FunctionalException("Une autre écriture comptable existe déjà avec la même référence.");
+                    LoggerUtils.logFunctionalException(ex);
+                    throw ex;
                 }
             } catch (NotFoundException vEx) {
                 // Dans ce cas, c'est bon, ça veut dire qu'on n'a aucune autre écriture avec la même référence.
+                LOGGER.info("L'ecriture comptable avec la référence {} est introuvable",pEcritureComptable.getReference());
             }
         }
     }

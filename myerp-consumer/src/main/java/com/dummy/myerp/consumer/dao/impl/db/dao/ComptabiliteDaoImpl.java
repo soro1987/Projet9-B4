@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.dummy.myerp.consumer.dao.impl.db.rowmapper.comptabilite.*;
 import com.dummy.myerp.model.bean.comptabilite.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,7 +21,12 @@ import com.dummy.myerp.technical.exception.NotFoundException;
 /**
  * Implémentation de l'interface {@link ComptabiliteDao}
  */
+
 public class ComptabiliteDaoImpl extends AbstractDbConsumer implements ComptabiliteDao {
+
+    private static final Logger LOGGER = LogManager.getLogger(ComptabiliteDaoImpl.class);
+
+
     // ==================== Constructeurs ====================
     /**
      * Instance unique de la classe (design pattern Singleton)
@@ -121,6 +128,7 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
         try {
             vBean = vJdbcTemplateNamed.queryForObject(SQLgetEcritureComptable, vSqlParams, vRM);
         } catch (EmptyResultDataAccessException vEx) {
+            LOGGER.info("EcritureComptable non trouvée : id={}",pId);
             throw new NotFoundException("EcritureComptable non trouvée : id=" + pId);
         }
         return vBean;
@@ -145,6 +153,7 @@ public class ComptabiliteDaoImpl extends AbstractDbConsumer implements Comptabil
         try {
             vBean = vJdbcTemplateNamed.queryForObject(SQLgetEcritureComptableByRef, vSqlParams, vRM);
         } catch (EmptyResultDataAccessException vEx) {
+            LOGGER.info("EcritureComptable non trouvée : reference={}",pReference);
             throw new NotFoundException("EcritureComptable non trouvée : reference=" + pReference);
         }
         return vBean;
