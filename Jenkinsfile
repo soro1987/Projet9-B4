@@ -16,7 +16,7 @@ pipeline {
     }
     //Niveaux
     stages {
-        stage ('Checkout source'){ //Recupération code source
+        stage ('Checkout source'){ //RecupÃ©ration code source
             steps{
                 checkout scm
             }
@@ -36,8 +36,25 @@ pipeline {
                 bat 'docker-compose stop myerp.db'
             }
         }
+        stage ('Build test repport'){ //Build project
+            steps{
+                bat 'mvn surefire-report:report-only -Daggregate=true'
+            }
+        }
 
     }
+    post {
+	always {
+		publishHTML (target: [
+		  allowMissing: false,
+		  alwaysLinkToLastBuild: false,
+		  keepAll: true,
+		  reportDir: 'target/site',
+		  reportFiles: 'surefire-report.html',
+		  reportName: "Surefire Report"
+		])
+	}
+}
 }
 
 //cpmpare to , get credit get d
