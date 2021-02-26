@@ -30,7 +30,7 @@ import static org.junit.Assert.assertEquals;
 })
 
 @ActiveProfiles("test")
-public class ComptabiliteManagerImplTestIT {
+public class ComptabiliteManagerImplITTest {
     @Autowired
     private BusinessProxyImpl businessProxy;
     @Autowired
