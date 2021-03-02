@@ -1,0 +1,15 @@
+language: java
+jdk:
+  - openjdk8
+
+services:
+  - docker
+
+script:
+- docker-compose up -d myerp.db
+- mvn clean install
+- docker-compose stop myerp.db
+- mvn surefire-report:report-only -Daggregate=true
+cache:
+  directories:
+    - '$HOME/.m2/repository'

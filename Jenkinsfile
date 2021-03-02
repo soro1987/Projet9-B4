@@ -33,7 +33,7 @@ pipeline {
         }
         stage ('Stop postgres'){ //Build project
             steps{
-                bat 'docker-compose stop myerp.db'
+                bat 'docker-compose stop myerp.db`'
             }
         }
         stage ('Build test repport'){ //Build project
