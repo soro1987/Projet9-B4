@@ -38,6 +38,8 @@ public class ComptabiliteManagerImplITTest {
     @Autowired
     ComptabiliteDaoImpl comptabiliteDao;
 
+
+
     @Test
     public void shouldCheckEcritureComptable() throws NotFoundException, FunctionalException {
         EcritureComptable vEcritureComptable;
@@ -56,6 +58,14 @@ public class ComptabiliteManagerImplITTest {
 
 
     }
+
+      /*
+    On s'attend à avoir une fonctionnalExeption quand l'écriture comptable ne contient pas au moin deux lignes
+    Aucun composant n'est mocker
+    Ce qui permet une intégration entre les différents composants
+    */
+
+
 
     @Test(expected = FunctionalException.class)
     public void shouldThrowExceptionWhenConstraintIsViolated() throws  FunctionalException {

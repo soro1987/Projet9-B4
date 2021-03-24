@@ -79,12 +79,19 @@ public class ComptabiliteManagerImplTest {
         manager.checkEcritureComptableUnit(vEcritureComptable);
     }
 
+
+   /*On commence par mocker tous ce qui est dépendence externe
+    comptabiliteDao qui est une composante externe de la comptabiliteManagerImpl
+    On à attribuer un comportement a cette comptabiliterDao lorsqu'on appele les méthiode getLastSequence; updateSequence
+    On lui passe ensuite l'écriture comptable puis on fait une assertion sur la référence pour vérifier que sont contenu est égale a la valeur s passer
+    */
     @Test
     public void shouldAddReference(){
         //Given
         EcritureComptable vEcritureComptable = new EcritureComptable();
         vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
-        vEcritureComptable.setDate( Date.from(LocalDate.of(2020,01,12).atStartOfDay(ZoneId.systemDefault()).toInstant()) );
+        vEcritureComptable.setDate( Date.from(LocalDate.of(2020,01,12)
+                .atStartOfDay(ZoneId.systemDefault()).toInstant()) );
         ComptabiliteManagerImpl comptabiliteManager = new ComptabiliteManagerImpl();
 
         DaoProxy daoProxy = Mockito.mock(DaoProxy.class);

@@ -62,7 +62,7 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
     /**
      * {@inheritDoc}
      */
-    // TODO à tester
+
     @Override
     public synchronized void addReference(EcritureComptable pEcritureComptable) {
         String reference;
