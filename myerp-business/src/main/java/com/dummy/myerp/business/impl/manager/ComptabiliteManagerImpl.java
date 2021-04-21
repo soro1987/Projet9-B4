@@ -23,7 +23,7 @@ import com.dummy.myerp.technical.exception.NotFoundException;
 /**
  * Comptabilite manager implementation.
  */
-
+//classe d'implémentation qui gére le métier sert à créer les régles de gestions et à les controler
 public class ComptabiliteManagerImpl extends AbstractBusinessManager implements ComptabiliteManager {
 
 
@@ -63,6 +63,7 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
      * {@inheritDoc}
      */
 
+    //Sert à construitr la référence et à l'ajouter à l'écriture comptable
     @Override
     public synchronized void addReference(EcritureComptable pEcritureComptable) {
         String reference;
@@ -165,8 +166,29 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
             throw ex;
         }
 
+//        RG_Compta_4	Les montants des lignes d'écriture sont signés et peuvent prendre des valeurs négatives (même si cela est peu fréquent).
+//        Il n'y a pas de cas ou la régles de gestion n'est pas remplis car le montant peut etre - ou +
+//        On ne peut donc pas faire de controle pour renvoyer une ex
+
+
+
+
         // TODO ===== RG_Compta_5 : Format et contenu de la référence
         // vérifier que l'année dans la référence correspond bien à la date de l'écriture, idem pour le code journal...
+        if (!checkReferenceContent(pEcritureComptable)){
+            FunctionalException ex = new FunctionalException(
+                    "L'année dans la référence ne correspond pas à la date de l'écriture comptable" +
+                            " et/ou le code de la référence ne correspond pas au code du journal.");
+            LoggerUtils.logFunctionalException(ex);
+            throw ex;
+        }
+
+    }
+
+    private boolean checkReferenceContent(EcritureComptable ecritureComptable){
+        String reference = ecritureComptable.getReference();
+        return reference.substring(3,7).equals(ecritureComptable.getDate().getYear()+"")
+                && reference.substring(0,2).equals(ecritureComptable.getJournal().getCode());
     }
 
 
@@ -200,6 +222,11 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
             }
         }
     }
+
+//    RG_Compta_7	Les montants des lignes d'écritures peuvent comporter 2 chiffres maximum après la virgule.
+//    Le controle sur le nombre de chiffres après la virgule ne peut se faire que lors de l'affichage du montant
+//    Il n'est donc pas possible de controler cette régle à ce niveau.
+
 
     /**
      * {@inheritDoc}

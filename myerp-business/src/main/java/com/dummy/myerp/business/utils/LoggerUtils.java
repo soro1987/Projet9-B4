@@ -13,6 +13,7 @@ public class LoggerUtils {
 
     public static void logFunctionalException(FunctionalException ex) {
 
+        //Elle log les functionnal ex et les sous ex des func ex
         LOGGER.error(ex.getMessage());
         if (ex.getCause() != null && ex.getCause() instanceof ConstraintViolationException) {
             ConstraintViolationException cause = (ConstraintViolationException) ex.getCause();

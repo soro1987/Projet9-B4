@@ -21,24 +21,25 @@ import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 
-@Transactional
-@RunWith(SpringJUnit4ClassRunner.class)
+@Transactional//Rolback a chaque test toutes les actions fait sur la base
+@RunWith(SpringJUnit4ClassRunner.class)//Permet de faire la relation entre junit et spring par ex pour faire l'injection
 @ContextConfiguration({
         "classpath:applicationContext.xml",
         "classpath:com/dummy/myerp/consumer/applicationContext.xml",
         "classpath:com/dummy/myerp/business/applicationContext.xml"
 })
 
-@ActiveProfiles("test")
+@ActiveProfiles("test")//Demmare les bean configurer pour les tests
 public class ComptabiliteManagerImplITTest {
+
     @Autowired
     private BusinessProxyImpl businessProxy;
+
     @Autowired
     private JdbcTemplate vJdbcTemplate;
+
     @Autowired
     ComptabiliteDaoImpl comptabiliteDao;
-
-
 
     @Test
     public void shouldCheckEcritureComptable() throws NotFoundException, FunctionalException {
@@ -55,17 +56,13 @@ public class ComptabiliteManagerImplITTest {
                 null, null,
                 new BigDecimal(1234)));
         businessProxy.getComptabiliteManager().checkEcritureComptable(vEcritureComptable);
-
-
     }
 
-      /*
+    /*
     On s'attend à avoir une fonctionnalExeption quand l'écriture comptable ne contient pas au moin deux lignes
     Aucun composant n'est mocker
     Ce qui permet une intégration entre les différents composants
     */
-
-
 
     @Test(expected = FunctionalException.class)
     public void shouldThrowExceptionWhenConstraintIsViolated() throws  FunctionalException {
