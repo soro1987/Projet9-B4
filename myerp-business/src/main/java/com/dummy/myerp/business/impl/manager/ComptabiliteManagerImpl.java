@@ -2,6 +2,7 @@ package com.dummy.myerp.business.impl.manager;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
@@ -187,7 +188,7 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
 
     private boolean checkReferenceContent(EcritureComptable ecritureComptable){
         String reference = ecritureComptable.getReference();
-        return reference.substring(3,7).equals(ecritureComptable.getDate().getYear()+"")
+        return reference.substring(3,7).equals(ecritureComptable.getDate().toInstant().atZone(ZoneId.systemDefault()).getYear()+"")
                 && reference.substring(0,2).equals(ecritureComptable.getJournal().getCode());
     }
 

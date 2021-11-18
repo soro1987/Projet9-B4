@@ -17,7 +17,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Date;
+import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 
@@ -47,7 +51,7 @@ public class ComptabiliteManagerImplITTest {
         vEcritureComptable = new EcritureComptable();
         vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
         vEcritureComptable.setReference("AC-2017/00001");
-        vEcritureComptable.setDate(new Date());
+        vEcritureComptable.setDate(Date.from(LocalDate.of(2017,05,23).atStartOfDay().toInstant(ZoneOffset.MAX)));
         vEcritureComptable.setLibelle("Achat");
         vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
                 null, new BigDecimal(1234),
@@ -105,7 +109,7 @@ public class ComptabiliteManagerImplITTest {
         vEcritureComptable = new EcritureComptable();
         vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
         vEcritureComptable.setReference("AC-2016/00002");
-        vEcritureComptable.setDate(new Date());
+        vEcritureComptable.setDate(Date.from(LocalDate.of(2016,05,23).atStartOfDay().toInstant(ZoneOffset.MAX)));
         vEcritureComptable.setLibelle("Achat");
         vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(401),
                 null, new BigDecimal(1234),
@@ -125,7 +129,7 @@ public class ComptabiliteManagerImplITTest {
         vEcritureComptable = new EcritureComptable();
         vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
         vEcritureComptable.setReference("AC-2016/00005");
-        vEcritureComptable.setDate(new Date());
+        vEcritureComptable.setDate(Date.from(LocalDate.of(2016,05,23).atStartOfDay().toInstant(ZoneOffset.MAX)));
         vEcritureComptable.setLibelle("Achat");
         vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(401),
                 null, new BigDecimal(1234),

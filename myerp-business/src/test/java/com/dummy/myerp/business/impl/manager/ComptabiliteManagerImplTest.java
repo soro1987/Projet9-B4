@@ -3,6 +3,7 @@ package com.dummy.myerp.business.impl.manager;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Date;
 import com.dummy.myerp.consumer.dao.contrat.ComptabiliteDao;
 import com.dummy.myerp.consumer.dao.contrat.DaoProxy;
@@ -198,7 +199,7 @@ public class ComptabiliteManagerImplTest {
         vEcritureComptable = new EcritureComptable();
         vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
         vEcritureComptable.setReference("AC-2016/00001");
-        vEcritureComptable.setDate(new Date());
+        vEcritureComptable.setDate(Date.from(LocalDate.of(2016,05,23).atStartOfDay().toInstant(ZoneOffset.MAX)));
         vEcritureComptable.setLibelle("Achat");
         vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
                 null, new BigDecimal(1234),

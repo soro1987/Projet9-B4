@@ -21,5 +21,4 @@ public class LoggerUtils {
             cause.getConstraintViolations().forEach(cv -> LOGGER.error(cv.getMessage()));
         }
     }
-
 }
