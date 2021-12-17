@@ -30,8 +30,9 @@ public class ComptabiliteManagerImplTest {
         EcritureComptable vEcritureComptable;
         vEcritureComptable = new EcritureComptable();
         vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
-        vEcritureComptable.setDate(new Date());
+        vEcritureComptable.setDate(Date.from(LocalDate.of(2016,05,23).atStartOfDay().toInstant(ZoneOffset.MAX)));
         vEcritureComptable.setLibelle("Libelle");
+        vEcritureComptable.setReference("AC-2016/00001");
         vEcritureComptable.getListLigneEcriture().add(new LigneEcritureComptable(new CompteComptable(1),
                                                                                  null, new BigDecimal(123),
                                                                                  null));
