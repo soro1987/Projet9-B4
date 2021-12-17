@@ -35,7 +35,9 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
     /**
      * Instantiates a new Comptabilite manager.
      */
+
     public ComptabiliteManagerImpl() {
+        System.out.println();
     }
 
 
@@ -155,7 +157,7 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
             }
         }
         // On test le nombre de lignes car si l'écriture à une seule ligne
-        //      avec un montant au débit et un montant au crédit ce n'est pas valable
+        // avec un montant au débit et un montant au crédit ce n'est pas valable
         if (pEcritureComptable.getListLigneEcriture().size() < 2
             || vNbrCredit < 1
             || vNbrDebit < 1) {

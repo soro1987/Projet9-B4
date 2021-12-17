@@ -18,4 +18,4 @@ Remise à zero
 cd docker/dev  
 docker-compose stop  
 docker-compose rm -v  
-docker-compose up  
+docker-compose up    
