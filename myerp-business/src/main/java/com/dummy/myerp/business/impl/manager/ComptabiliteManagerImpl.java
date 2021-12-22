@@ -174,10 +174,6 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
 //        On ne peut donc pas faire de controle pour renvoyer une ex
 
 
-
-
-        // TODO ===== RG_Compta_5 : Format et contenu de la référence
-        // vérifier que l'année dans la référence correspond bien à la date de l'écriture, idem pour le code journal...
         if (!checkReferenceContent(pEcritureComptable)){
             FunctionalException ex = new FunctionalException(
                     "L'année dans la référence ne correspond pas à la date de l'écriture comptable" +
@@ -185,9 +181,9 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
             LoggerUtils.logFunctionalException(ex);
             throw ex;
         }
-
     }
 
+    // vérifier que l'année dans la référence correspond bien à la date de l'écriture, idem pour le code journal...
     private boolean checkReferenceContent(EcritureComptable ecritureComptable){
         String reference = ecritureComptable.getReference();
         return reference.substring(3,7).equals(ecritureComptable.getDate().toInstant().atZone(ZoneId.systemDefault()).getYear()+"")
