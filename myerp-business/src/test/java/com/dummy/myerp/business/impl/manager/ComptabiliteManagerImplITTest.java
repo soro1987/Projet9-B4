@@ -61,7 +61,7 @@ public class ComptabiliteManagerImplITTest {
                 new BigDecimal(1234)));
         businessProxy.getComptabiliteManager().checkEcritureComptable(vEcritureComptable);
     }
-
+//test soutenance
     /*
     On s'attend à avoir une fonctionnalExeption quand l'écriture comptable ne contient pas au moin deux lignes
     Aucun composant n'est mocker
