@@ -66,7 +66,7 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
      * {@inheritDoc}
      */
 
-    //Sert à construitr la référence et à l'ajouter à l'écriture comptable
+    //Sert à construitre la référence et à l'ajouter à l'écriture comptable
     @Override
     public synchronized void addReference(EcritureComptable pEcritureComptable) {
         String reference;
@@ -136,7 +136,6 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
             throw ex;
         }
 
-        // ===== RG_Compta_2 : Pour qu'une écriture comptable soit valide, elle doit être équilibrée
         if (!pEcritureComptable.isEquilibree()) {
 
             FunctionalException ex = new FunctionalException("L'écriture comptable n'est pas équilibrée.");
@@ -183,14 +182,6 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
         }
     }
 
-    // vérifier que l'année dans la référence correspond bien à la date de l'écriture, idem pour le code journal...
-    private boolean checkReferenceContent(EcritureComptable ecritureComptable){
-        String reference = ecritureComptable.getReference();
-        return reference.substring(3,7).equals(ecritureComptable.getDate().toInstant().atZone(ZoneId.systemDefault()).getYear()+"")
-                && reference.substring(0,2).equals(ecritureComptable.getJournal().getCode());
-    }
-
-
     /**
      * Vérifie que l'Ecriture comptable respecte les règles de gestion liées au contexte
      * (unicité de la référence, année comptable non cloturé...)
@@ -221,6 +212,15 @@ public class ComptabiliteManagerImpl extends AbstractBusinessManager implements 
             }
         }
     }
+
+
+    // vérifier que l'année dans la référence correspond bien à la date de l'écriture, idem pour le code journal...
+    private boolean checkReferenceContent(EcritureComptable ecritureComptable){
+        String reference = ecritureComptable.getReference();
+        return reference.substring(3,7).equals(ecritureComptable.getDate().toInstant().atZone(ZoneId.systemDefault()).getYear()+"")
+                && reference.substring(0,2).equals(ecritureComptable.getJournal().getCode());
+    }
+
 
 //    RG_Compta_7	Les montants des lignes d'écritures peuvent comporter 2 chiffres maximum après la virgule.
 //    Le controle sur le nombre de chiffres après la virgule ne peut se faire que lors de l'affichage du montant

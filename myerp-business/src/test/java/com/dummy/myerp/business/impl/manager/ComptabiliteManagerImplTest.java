@@ -117,9 +117,35 @@ public class ComptabiliteManagerImplTest {
         comptabiliteManager.addReference(vEcritureComptable);
         //Then
         assertEquals("AC-2020/00002",vEcritureComptable.getReference() );
+    }
 
+    @Test
+    public void shouldAddReferenceWhenSequenceNull(){
+        //Given
+        EcritureComptable vEcritureComptable = new EcritureComptable();
+        vEcritureComptable.setJournal(new JournalComptable("AC", "Achat"));
+        vEcritureComptable.setDate( Date.from(LocalDate.of(2020,01,12)
+                .atStartOfDay(ZoneId.systemDefault()).toInstant()) );
+        ComptabiliteManagerImpl comptabiliteManager = new ComptabiliteManagerImpl();
 
+        DaoProxy daoProxy = Mockito.mock(DaoProxy.class);
 
+        ComptabiliteDao comptabiliteDao = Mockito.mock(ComptabiliteDao.class);
+
+        Mockito.doReturn(comptabiliteDao).when(daoProxy).getComptabiliteDao();
+
+        Mockito.doReturn(null).when(comptabiliteDao)
+                .getLastSequence(Mockito.anyString(),Mockito.anyInt());
+
+        Mockito.doNothing().when(comptabiliteDao)
+                .updateSequence(Mockito.isA(SequenceEcritureComptable.class));
+
+        comptabiliteManager.setDaoProxy(daoProxy);
+        //When
+
+        comptabiliteManager.addReference(vEcritureComptable);
+        //Then
+        assertEquals("AC-2020/00001",vEcritureComptable.getReference() );
     }
 
     @Test

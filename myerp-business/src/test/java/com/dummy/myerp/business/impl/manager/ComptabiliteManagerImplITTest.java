@@ -85,7 +85,7 @@ public class ComptabiliteManagerImplITTest {
     @Test(expected = FunctionalException.class)
     public void shouldThrowExceptionWhenReferenceAlreadyExists() throws  FunctionalException {
         //Insertion d'une ecriture comptable ds la db h2 pour avoir un retour a tester
-        String sql = "insert into myerp.ecriture_comptable(id,journal_code,reference,date,libelle)  values (1,'AC','AC-2017/00001','2016-12-31','Cartouches d’imprimante')";
+        String sql = "insert into myerp.ecriture_comptable(id,journal_code,reference,date,libelle)  values (1,'AC','AC-2017/00001','2017-12-31','Cartouches d’imprimante')";
         vJdbcTemplate.execute(sql);
         EcritureComptable vEcritureComptable;
         vEcritureComptable = new EcritureComptable();
