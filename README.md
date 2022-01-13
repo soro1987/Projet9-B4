@@ -1,6 +1,6 @@
 # Projet9-B4
 
-Neuvième projet de la formation openclassroom sur les test junit   
+Neuvième projet de la formation openclassroom sur les tests junit   
 Taux de coverage du projet : 86%   
   
 Environnement de développement  
